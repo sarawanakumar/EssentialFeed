@@ -72,8 +72,10 @@ private struct FeedItemsMapper {
         }
     }
     
+    static var OK_200 = 200
+    
     static func map(data: Data, respose: HTTPURLResponse) throws -> [FeedItem] {
-        guard respose.statusCode == 200 else {
+        guard respose.statusCode == OK_200 else {
             throw RemoteFeedLoader.Error.invalidData
         }
         
