@@ -38,7 +38,7 @@ class RemoteFeedLoaderTests: XCTestCase {
     func test_load_returnsConnectivityError() {
         let (sut, client) = makeSUT()
 //      Spy instead of a mock (do later vs early 9the expectations0)
-        expect(sut, completeWith: .connectivity) {
+        expect(sut, completeWith: .failure(.connectivity)) {
             let clientError = NSError(domain: "Test", code: 0)
             client.complete(with: clientError)
         }
@@ -50,7 +50,7 @@ class RemoteFeedLoaderTests: XCTestCase {
         let errorCodes = [199, 201, 300, 400, 500]
         errorCodes.enumerated()
             .forEach { (idx, code) in
-                expect(sut, completeWith: .invalidData) {
+                expect(sut, completeWith: .failure(.invalidData)) {
                     client.complete(withStatusCode: code, at: idx)
                 }
         }
@@ -59,7 +59,7 @@ class RemoteFeedLoaderTests: XCTestCase {
     func test_deliversErrorWith200AndInvalidJson() {
         let (sut, client) = makeSUT()
         
-        expect(sut, completeWith: .invalidData) {
+        expect(sut, completeWith: .failure(.invalidData)) {
             let invalidJSON = Data("invalidjson".utf8)
             client.complete(withStatusCode: 200, data: invalidJSON)
         }
@@ -69,17 +69,17 @@ class RemoteFeedLoaderTests: XCTestCase {
     
     private func expect(
         _ sut: RemoteFeedLoader,
-        completeWith error: RemoteFeedLoader.Error,
+        completeWith result: RemoteFeedLoader.Result,
         action: ()->Void,
         file: StaticString = #file,
         line: UInt = #line
     ) {
-        var capturedErrors = [RemoteFeedLoader.Error]()
-        sut.load { capturedErrors.append($0) }
+        var capturedResult = [RemoteFeedLoader.Result]()
+        sut.load { capturedResult.append($0) }
         
         action()
 
-        XCTAssertEqual(capturedErrors, [error], file: file, line: line)
+        XCTAssertEqual(capturedResult, [result], file: file, line: line)
     }
      
     private func makeSUT(url: URL = URL(string: "a.url.com")!) -> (RemoteFeedLoader, HTTPClientSpy) {
