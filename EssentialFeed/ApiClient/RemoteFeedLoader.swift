@@ -10,7 +10,7 @@ public protocol HTTPClient {
 }
 
 public enum HTTPClientResult {
-    case Success(HTTPURLResponse)
+    case Success(HTTPURLResponse, Data)
     case Failure(Error)
 }
 
