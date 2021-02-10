@@ -38,7 +38,7 @@ class RemoteFeedLoaderTests: XCTestCase {
     func test_load_returnsConnectivityError() {
         let (sut, client) = makeSUT()
 //      Spy instead of a mock (do later vs early 9the expectations0)
-        expect(sut, completeWith: .failure(RemoteFeedLoader.Error.connectivity)) {
+        expect(sut, completeWith: failure(.connectivity)) {
             let clientError = NSError(domain: "Test", code: 0)
             client.complete(with: clientError)
         }
@@ -50,7 +50,7 @@ class RemoteFeedLoaderTests: XCTestCase {
         let errorCodes = [199, 201, 300, 400, 500]
         errorCodes.enumerated()
             .forEach { (idx, code) in
-                expect(sut, completeWith: .failure(RemoteFeedLoader.Error.invalidData)) {
+                expect(sut, completeWith: failure(.invalidData)) {
                     let json = makeItemsJson([])
                     client.complete(withStatusCode: code, data: Data(json), at: idx)
                 }
@@ -60,7 +60,7 @@ class RemoteFeedLoaderTests: XCTestCase {
     func test_deliversErrorWith200AndInvalidJson() {
         let (sut, client) = makeSUT()
         
-        expect(sut, completeWith: .failure(RemoteFeedLoader.Error.invalidData)) {
+        expect(sut, completeWith: failure(.invalidData)) {
             let invalidJSON = Data("invalidjson".utf8)
             client.complete(withStatusCode: 200, data: invalidJSON)
         }
@@ -168,6 +168,10 @@ class RemoteFeedLoaderTests: XCTestCase {
         addTeardownBlock { [weak instance] in //checks, if sut is dealloced as the invocation completes?
             XCTAssertNil(instance, "instance should have been deallocated", file: file, line: line)
         }
+    }
+    
+    func failure(_ error: RemoteFeedLoader.Error) -> LoadFeedResult {
+        return .failure(error)
     }
     
     private class HTTPClientSpy: HTTPClient {
