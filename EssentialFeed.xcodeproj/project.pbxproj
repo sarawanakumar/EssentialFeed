@@ -105,10 +105,10 @@
 		7E95CBFC25CE80A20075530F /* EssentialFeed */ = {
 			isa = PBXGroup;
 			children = (
+				7E95CC1E25D05B7A0075530F /* FeedFeature */,
 				7E95CC3825D157A70075530F /* ApiClient */,
 				7E95CBFD25CE80A20075530F /* EssentialFeed.h */,
 				7E95CBFE25CE80A20075530F /* Info.plist */,
-				7E95CC1E25D05B7A0075530F /* FeedFeature */,
 			);
 			path = EssentialFeed;
 			sourceTree = "<group>";

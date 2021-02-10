@@ -7,7 +7,7 @@
 
 
 
-public class RemoteFeedLoader {
+public class RemoteFeedLoader: FeedLoader {
     //Feedloader's responsibility is not to know which URL it should use, instead it should be given by someone(the collaborator?), similarly the Client
     private var client: HTTPClient
     private var url: URL
@@ -16,11 +16,8 @@ public class RemoteFeedLoader {
         case connectivity
         case invalidData
     }
+    public typealias Result = LoadFeedResult<Error>
     
-    public enum Result: Equatable {
-        case success([FeedItem])
-        case failure(Error)
-    }
     
     public init(client: HTTPClient, url: URL) {
         self.client = client
