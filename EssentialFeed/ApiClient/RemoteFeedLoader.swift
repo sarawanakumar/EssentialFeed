@@ -5,14 +5,7 @@
 //  Created by Saravanakumar S on 08/02/21.
 //
 
-public protocol HTTPClient {
-    func get(from url: URL, completion: @escaping (HTTPClientResult) -> Void)
-}
 
-public enum HTTPClientResult {
-    case Success(HTTPURLResponse, Data)
-    case Failure(Error)
-}
 
 public class RemoteFeedLoader {
     //Feedloader's responsibility is not to know which URL it should use, instead it should be given by someone(the collaborator?), similarly the Client
