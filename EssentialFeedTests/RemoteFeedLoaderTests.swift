@@ -38,7 +38,7 @@ class RemoteFeedLoaderTests: XCTestCase {
     func test_load_returnsConnectivityError() {
         let (sut, client) = makeSUT()
 //      Spy instead of a mock (do later vs early 9the expectations0)
-        expect(sut, completeWith: .failure(.connectivity)) {
+        expect(sut, completeWith: .failure(RemoteFeedLoader.Error.connectivity)) {
             let clientError = NSError(domain: "Test", code: 0)
             client.complete(with: clientError)
         }
@@ -50,7 +50,7 @@ class RemoteFeedLoaderTests: XCTestCase {
         let errorCodes = [199, 201, 300, 400, 500]
         errorCodes.enumerated()
             .forEach { (idx, code) in
-                expect(sut, completeWith: .failure(.invalidData)) {
+                expect(sut, completeWith: .failure(RemoteFeedLoader.Error.invalidData)) {
                     let json = makeItemsJson([])
                     client.complete(withStatusCode: code, data: Data(json), at: idx)
                 }
@@ -60,7 +60,7 @@ class RemoteFeedLoaderTests: XCTestCase {
     func test_deliversErrorWith200AndInvalidJson() {
         let (sut, client) = makeSUT()
         
-        expect(sut, completeWith: .failure(.invalidData)) {
+        expect(sut, completeWith: .failure(RemoteFeedLoader.Error.invalidData)) {
             let invalidJSON = Data("invalidjson".utf8)
             client.complete(withStatusCode: 200, data: invalidJSON)
         }
@@ -120,7 +120,7 @@ class RemoteFeedLoaderTests: XCTestCase {
             switch(receivedResult, expectedResult) {
             case let (.success(receivedFeedItems), .success(expectedFeedItems)):
                 XCTAssertEqual(receivedFeedItems, expectedFeedItems, file: file, line: line)
-            case let (.failure(receivedError), .failure(expectedError)):
+            case let (.failure(receivedError as RemoteFeedLoader.Error), .failure(expectedError as RemoteFeedLoader.Error)):
                 XCTAssertEqual(receivedError, expectedError, file: file, line: line)
             default:
                 XCTFail("Expected \(expectedResult) got \(receivedResult)", file: file, line: line)
