@@ -8,10 +8,18 @@
 import XCTest
 import EssentialFeed
 
+protocol HTTPSession {
+    func dataTask(with url: URL, completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void) -> HTTPSessionTask
+}
+
+protocol HTTPSessionTask {
+    func resume()
+}
+
 class URLSessionHTTPClient {
-    var urlSession: URLSession
+    var urlSession: HTTPSession
     
-    init(session: URLSession) {
+    init(session: HTTPSession) {
         self.urlSession = session
     }
     
@@ -30,8 +38,8 @@ class URLSessionHTTPClientTests: XCTestCase {
     func test_getFromURL_resumesTheDataTask() {
         //The test are testing exactly the implementation of the URLSession/DataTask apis, whihc is not ideal
         let url = URL(string: "a-url.com")!
-        let session = URLSessionSpy()
-        let taskSpy = URLSessionDataTaskSpy()
+        let session = HTTPSessionSpy()
+        let taskSpy = HTTPSessionTaskSpy()
         session.stub(url: url, task: taskSpy)
         
         let sut = URLSessionHTTPClient(session: session)
@@ -44,7 +52,7 @@ class URLSessionHTTPClientTests: XCTestCase {
     func test_getFromURL_failsWithAnError() {
         let url = URL(string: "a-url.com")!
         let error = NSError(domain: "Failed", code: 0)
-        let session = URLSessionSpy()
+        let session = HTTPSessionSpy()
         session.stub(url: url, error: error)
         
         let sut = URLSessionHTTPClient(session: session)
@@ -63,19 +71,19 @@ class URLSessionHTTPClientTests: XCTestCase {
     }
     
     //MARK: - Helper Methods
-    private class URLSessionSpy: URLSession {
+    private class HTTPSessionSpy: HTTPSession {
         var stub = [URL: StubResult]()
         
         struct StubResult {
-            var dataTask: URLSessionDataTask
+            var dataTask: HTTPSessionTask
             var error: Error?
         }
         
-        func stub( url: URL, task: URLSessionDataTask = FakeURLSessionDataTask(), error: Error? = nil) {
+        func stub( url: URL, task: HTTPSessionTask = FakeHTTPSessionTask(), error: Error? = nil) {
             stub[url] = StubResult(dataTask: task, error: error)
         }
             
-        override func dataTask(with url: URL, completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void) -> URLSessionDataTask {
+        func dataTask(with url: URL, completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void) -> HTTPSessionTask {
             guard let stub = stub[url] else {
                 fatalError("Could not find stub for the url \(url)")
             }
@@ -85,14 +93,14 @@ class URLSessionHTTPClientTests: XCTestCase {
         }
     }
     
-    private class FakeURLSessionDataTask: URLSessionDataTask {
-        override func resume() {}
+    private class FakeHTTPSessionTask: HTTPSessionTask {
+        func resume() {}
     }
     
-    private class URLSessionDataTaskSpy: URLSessionDataTask {
+    private class HTTPSessionTaskSpy: HTTPSessionTask {
         var resumeCallCount = 0
         
-        override func resume() {
+        func resume() {
             resumeCallCount += 1
         }
     }
