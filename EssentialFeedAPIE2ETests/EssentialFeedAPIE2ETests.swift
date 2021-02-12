@@ -11,7 +11,6 @@ import EssentialFeed
 class EssentialFeedAPIE2ETests: XCTestCase {
 
     func test_e2eServerGETFeedResult_MatchesFeedWithTestAccount() {
-        
         let receivedResult = getFeedResult()
         
         switch receivedResult {
@@ -33,11 +32,14 @@ class EssentialFeedAPIE2ETests: XCTestCase {
 
     // MARK: - Helper methods
     
-    func getFeedResult() -> LoadFeedResult? {
+    func getFeedResult(file: StaticString = #file, line: UInt = #line) -> LoadFeedResult? {
         let testURL = URL(string: "https://essentialdeveloper.com/feed-case-study/test-api/feed")!
         let client = URLSessionHTTPClient()
         let loader = RemoteFeedLoader(client: client, url: testURL)
         var receivedResult: LoadFeedResult?
+        
+        trackForMemoryLeaks(instance: client, file: file, line: line)
+        trackForMemoryLeaks(instance: loader, file: file, line: line)
         
         let exp = expectation(description: "Wait for api call to return")
         loader.load { result in
