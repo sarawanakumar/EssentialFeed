@@ -3,3 +3,4 @@ osx_image: xcode12.1
 language: swift
 script: xcodebuild clean build test -project EssentialFeed.xcodeproj -scheme "EssentialFeedCI" -sdk iphonesimulator -destination "platform=iOS Simulator,name=iPhone 12,OS=14.1" CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
 
+
