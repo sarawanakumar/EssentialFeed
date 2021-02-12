@@ -8,29 +8,6 @@
 import XCTest
 import EssentialFeed
 
-class URLSessionHTTPClient: HTTPClient {
-    struct UnexpectedErrorRepresentation: Error {}
-    
-    var urlSession: URLSession
-    
-    init(session: URLSession = .shared) {
-        self.urlSession = session
-    }
-    
-    func get(from url: URL, completion: @escaping (HTTPClientResult) -> Void) {
-        let task = urlSession.dataTask(with: url) { (data, response, error) in
-            if let error = error {
-                completion(.Failure(error))
-            } else if let data = data, let response = response as? HTTPURLResponse {
-                completion(.Success(response, data))
-            } else {
-                completion(.Failure(UnexpectedErrorRepresentation()))
-            }
-        }
-        task.resume()
-    }
-}
-
 /**
  * A test must test only one aspect of the whole feature.
  * However, in the example 'test_getFromURL_failsWithAnError'
