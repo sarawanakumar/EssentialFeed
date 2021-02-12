@@ -69,23 +69,11 @@ class URLSessionHTTPClientTests: XCTestCase {
         
     }
     
-    func test_getFromURL_failsWithAnError() {
+    func test_getFromURL_failsWithAnRequestError() {
+        let requestError = NSError(domain: "Failed", code: 0)
+        let receivedError = getErrorIfReceived(data: nil, response: nil, error: requestError)
         
-        let error = NSError(domain: "Failed", code: 0)
-        URLProtocolStub.stub(data: nil, response: nil, error: error)
-        
-        let exp = expectation(description: "Wait for Result to be completed")
-        makeSUT().get(url: anyURL()) { result in
-            switch result {
-            case let .Failure(actualError as NSError):
-                XCTAssertEqual(error.domain, actualError.domain)
-            default:
-                XCTFail("Expected \(error) got data task)")
-            }
-            exp.fulfill()
-        }
-        
-        wait(for: [exp], timeout: 1.0)
+        XCTAssertEqual(requestError.domain, (receivedError as NSError?)?.domain)
     }
     
     func test_getFromURL_failsWhenAllParamsReceivedAreNil() {
@@ -114,6 +102,26 @@ class URLSessionHTTPClientTests: XCTestCase {
         return sut
     }
     
+    func getErrorIfReceived(data: Data?, response: URLResponse?, error: Error?, file: StaticString = #file, line: UInt = #line) -> Error? {
+        URLProtocolStub.stub(data: data, response: response, error: error)
+        let sut = makeSUT(file: file, line: line)
+        var receivedError: Error?
+        
+        let exp = expectation(description: "Wait for Result to be completed")
+        sut.get(url: anyURL()) { result in
+            switch result {
+            case let .Failure(actualError):
+                receivedError = actualError
+            default:
+                XCTFail("Expected \(error) got data task)", file: file, line: line)
+            }
+            exp.fulfill()
+        }
+        
+        wait(for: [exp], timeout: 1.0)
+        return receivedError
+    }
+    
     func anyURL() -> URL {
         return URL(string: "a-url.com")!
     }
@@ -124,7 +132,7 @@ class URLSessionHTTPClientTests: XCTestCase {
         
         struct StubResult {
             var data: Data?
-            var response: HTTPURLResponse?
+            var response: URLResponse?
             var error: Error?
         }
         
@@ -142,7 +150,7 @@ class URLSessionHTTPClientTests: XCTestCase {
             requestObserver = nil
         }
         
-        static func stub(data: Data?, response: HTTPURLResponse?, error: Error?) {
+        static func stub(data: Data?, response: URLResponse?, error: Error?) {
             stub = StubResult(error: error)
         }
         
