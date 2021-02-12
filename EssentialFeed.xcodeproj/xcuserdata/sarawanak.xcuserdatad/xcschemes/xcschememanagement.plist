@@ -4,17 +4,17 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
-		<key>CI.xcscheme_^#shared#^_</key>
+		<key>CI.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
 			<integer>1</integer>
 		</dict>
-		<key>EssentialFeed.xcscheme_^#shared#^_</key>
+		<key>EssentialFeed.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
 			<integer>0</integer>
 		</dict>
-		<key>EssentialFeedAPIE2ETests.xcscheme_^#shared#^_</key>
+		<key>EssentialFeedAPIE2ETests.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
 			<integer>2</integer>
