@@ -9,6 +9,8 @@ import XCTest
 import EssentialFeed
 
 class URLSessionHTTPClient {
+    struct UnexpectedErrorRepresentation: Error {}
+    
     var urlSession: URLSession
     
     init(session: URLSession = .shared) {
@@ -19,6 +21,8 @@ class URLSessionHTTPClient {
         let task = urlSession.dataTask(with: url) { (_, _, error) in
             if let error = error {
                 completion(.Failure(error))
+            } else {
+                completion(.Failure(UnexpectedErrorRepresentation()))
             }
         }
         task.resume()
@@ -50,14 +54,16 @@ class URLSessionHTTPClientTests: XCTestCase {
     }
     
     func test_getFromURL_ExecutesURLWithGETRequest() {
+        let url = anyURL()
         let exp = expectation(description: "Wait for the completion to execute")
+        
         URLProtocolStub.observeRequest { urlRequest in
-            XCTAssertEqual(urlRequest.url, anyURL())
+            XCTAssertEqual(urlRequest.url, url)
             XCTAssertEqual(urlRequest.httpMethod, "GET")
             exp.fulfill()
         }
         
-        makeSUT().get(url: anyURL()) { (_) in }
+        makeSUT().get(url: url) { (_) in }
         
         wait(for: [exp], timeout: 1.0)
         
@@ -75,6 +81,23 @@ class URLSessionHTTPClientTests: XCTestCase {
                 XCTAssertEqual(error.domain, actualError.domain)
             default:
                 XCTFail("Expected \(error) got data task)")
+            }
+            exp.fulfill()
+        }
+        
+        wait(for: [exp], timeout: 1.0)
+    }
+    
+    func test_getFromURL_failsWhenAllParamsReceivedAreNil() {
+        URLProtocolStub.stub(data: nil, response: nil, error: nil)
+        
+        let exp = expectation(description: "Wait for Result to be completed")
+        makeSUT().get(url: anyURL()) { result in
+            switch result {
+            case .Failure:
+                break
+            default:
+                XCTFail("Assertion failure")
             }
             exp.fulfill()
         }
