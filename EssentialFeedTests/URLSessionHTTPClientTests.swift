@@ -18,9 +18,11 @@ class URLSessionHTTPClient {
     }
     
     func get(url: URL, completion: @escaping (HTTPClientResult) -> Void) {
-        let task = urlSession.dataTask(with: url) { (_, _, error) in
+        let task = urlSession.dataTask(with: url) { (data, response, error) in
             if let error = error {
                 completion(.Failure(error))
+            } else if let data = data, let response = response as? HTTPURLResponse {
+                completion(.Success(response, data))
             } else {
                 completion(.Failure(UnexpectedErrorRepresentation()))
             }
@@ -79,18 +81,33 @@ class URLSessionHTTPClientTests: XCTestCase {
     func test_getFromURL_failsOnAllInvalidRepresentations() {
         XCTAssertNotNil(getErrorIfReceived(data: nil, response: nil, error: nil))
         XCTAssertNotNil(getErrorIfReceived(data: nil, response: anyURLResponse(), error: nil))
-        XCTAssertNotNil(getErrorIfReceived(data: nil, response: anyHTTPURLResponse(), error: nil))
         
         XCTAssertNotNil(getErrorIfReceived(data: anyData(), response: nil, error: nil))
+        XCTAssertNotNil(getErrorIfReceived(data: anyData(), response: nil, error: anyError()))
         XCTAssertNotNil(getErrorIfReceived(data: anyData(), response: anyURLResponse(), error: nil))
         XCTAssertNotNil(getErrorIfReceived(data: anyData(), response: anyURLResponse(), error: anyError()))
-        XCTAssertNotNil(getErrorIfReceived(data: anyData(), response: anyHTTPURLResponse(), error: nil))
         XCTAssertNotNil(getErrorIfReceived(data: anyData(), response: anyHTTPURLResponse(), error: anyError()))
         
         XCTAssertNotNil(getErrorIfReceived(data: nil, response: anyURLResponse(), error: anyError()))
         XCTAssertNotNil(getErrorIfReceived(data: nil, response: anyHTTPURLResponse(), error: anyError()))
     }
     
+    func test_getFromURL_testSucceedsWithEmptyDataWhenDataReceivedIsNil() {
+        let receivedValue = getValuesIfReceived(data: nil, response: anyHTTPURLResponse(), error: nil)
+        
+        XCTAssertEqual(Data(), receivedValue?.data)
+    }
+    
+    func test_getFromURL_getsDataWhenReceiveDataAndHTTPURLResponse() {
+        let data = anyData()
+        let response = anyHTTPURLResponse()
+        
+        let receivedValue = getValuesIfReceived(data: data, response: response, error: nil)
+        
+        XCTAssertEqual(data, receivedValue?.data)
+        XCTAssertEqual(response.statusCode, receivedValue?.response.statusCode)
+        XCTAssertEqual(response.url, receivedValue?.response.url)
+    }
     //MARK: - Helper Methods
     
     func makeSUT(file: StaticString = #file, line: UInt = #line) -> URLSessionHTTPClient {
@@ -98,6 +115,26 @@ class URLSessionHTTPClientTests: XCTestCase {
         trackForMemoryLeaks(instance: sut, file: file, line: line)
         
         return sut
+    }
+    
+    func getValuesIfReceived(data: Data?, response: URLResponse?, error: Error?, file: StaticString = #file, line: UInt = #line) -> (data: Data, response: HTTPURLResponse)? {
+        var receivedValue: (Data, HTTPURLResponse)?
+        
+        URLProtocolStub.stub(data: data, response: response, error: error)
+        
+        let exp = expectation(description: "Wait for completion to finish")
+        makeSUT().get(url: anyURL()) { (result) in
+            switch result {
+            case let .Success(receivedResponse, receivedData):
+                receivedValue = (receivedData, receivedResponse)
+            default:
+                XCTFail("Expected to success")
+            }
+            exp.fulfill()
+        }
+        
+        wait(for: [exp], timeout: 1.0)
+        return receivedValue
     }
     
     func getErrorIfReceived(data: Data?, response: URLResponse?, error: Error?, file: StaticString = #file, line: UInt = #line) -> Error? {
@@ -154,7 +191,7 @@ class URLSessionHTTPClientTests: XCTestCase {
         }
         
         static func stub(data: Data?, response: URLResponse?, error: Error?) {
-            stub = StubResult(error: error)
+            stub = StubResult(data: data, response: response, error: error)
         }
         
         override class func canInit(with request: URLRequest) -> Bool {
