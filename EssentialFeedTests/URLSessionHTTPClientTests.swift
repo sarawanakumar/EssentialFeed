@@ -86,8 +86,17 @@ class URLSessionHTTPClientTests: XCTestCase {
     
     //MARK: - Helper Methods
     
-    func makeSUT() -> URLSessionHTTPClient {
-        return
+    func makeSUT(file: StaticString = #file, line: UInt = #line) -> URLSessionHTTPClient {
+        let sut = URLSessionHTTPClient()
+        trackForMemoryLeaks(instance: sut, file: file, line: line)
+        
+        return sut
+    }
+    
+    func trackForMemoryLeaks(instance: AnyObject, file: StaticString = #file, line: UInt = #line) {
+        addTeardownBlock { [weak instance] in //checks, if sut is dealloced as the invocation completes?
+            XCTAssertNil(instance, "instance should have been deallocated", file: file, line: line)
+        }
     }
     
     private class URLProtocolStub: URLProtocol {
