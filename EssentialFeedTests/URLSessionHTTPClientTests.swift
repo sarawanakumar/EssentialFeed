@@ -77,20 +77,7 @@ class URLSessionHTTPClientTests: XCTestCase {
     }
     
     func test_getFromURL_failsWhenAllParamsReceivedAreNil() {
-        URLProtocolStub.stub(data: nil, response: nil, error: nil)
-        
-        let exp = expectation(description: "Wait for Result to be completed")
-        makeSUT().get(url: anyURL()) { result in
-            switch result {
-            case .Failure:
-                break
-            default:
-                XCTFail("Assertion failure")
-            }
-            exp.fulfill()
-        }
-        
-        wait(for: [exp], timeout: 1.0)
+        XCTAssertNotNil(getErrorIfReceived(data: nil, response: nil, error: nil))
     }
     
     //MARK: - Helper Methods
@@ -113,7 +100,7 @@ class URLSessionHTTPClientTests: XCTestCase {
             case let .Failure(actualError):
                 receivedError = actualError
             default:
-                XCTFail("Expected \(error) got data task)", file: file, line: line)
+                XCTFail("Expected \(String(describing: error)) got data task)", file: file, line: line)
             }
             exp.fulfill()
         }
