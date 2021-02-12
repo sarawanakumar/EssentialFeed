@@ -8,7 +8,7 @@
 import XCTest
 import EssentialFeed
 
-class URLSessionHTTPClient {
+class URLSessionHTTPClient: HTTPClient {
     struct UnexpectedErrorRepresentation: Error {}
     
     var urlSession: URLSession
@@ -17,7 +17,7 @@ class URLSessionHTTPClient {
         self.urlSession = session
     }
     
-    func get(url: URL, completion: @escaping (HTTPClientResult) -> Void) {
+    func get(from url: URL, completion: @escaping (HTTPClientResult) -> Void) {
         let task = urlSession.dataTask(with: url) { (data, response, error) in
             if let error = error {
                 completion(.Failure(error))
@@ -65,7 +65,7 @@ class URLSessionHTTPClientTests: XCTestCase {
             exp.fulfill()
         }
         
-        makeSUT().get(url: url) { (_) in }
+        makeSUT().get(from: url) { (_) in }
         
         wait(for: [exp], timeout: 1.0)
         
@@ -110,7 +110,7 @@ class URLSessionHTTPClientTests: XCTestCase {
     }
     //MARK: - Helper Methods
     
-    func makeSUT(file: StaticString = #file, line: UInt = #line) -> URLSessionHTTPClient {
+    func makeSUT(file: StaticString = #file, line: UInt = #line) -> HTTPClient {
         let sut = URLSessionHTTPClient()
         trackForMemoryLeaks(instance: sut, file: file, line: line)
         
@@ -123,7 +123,7 @@ class URLSessionHTTPClientTests: XCTestCase {
         URLProtocolStub.stub(data: data, response: response, error: error)
         
         let exp = expectation(description: "Wait for completion to finish")
-        makeSUT().get(url: anyURL()) { (result) in
+        makeSUT().get(from: anyURL()) { (result) in
             switch result {
             case let .Success(receivedResponse, receivedData):
                 receivedValue = (receivedData, receivedResponse)
@@ -143,7 +143,7 @@ class URLSessionHTTPClientTests: XCTestCase {
         var receivedError: Error?
         
         let exp = expectation(description: "Wait for Result to be completed")
-        sut.get(url: anyURL()) { result in
+        sut.get(from: anyURL()) { result in
             switch result {
             case let .Failure(actualError):
                 receivedError = actualError
