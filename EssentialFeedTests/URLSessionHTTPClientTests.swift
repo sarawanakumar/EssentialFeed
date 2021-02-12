@@ -76,8 +76,19 @@ class URLSessionHTTPClientTests: XCTestCase {
         XCTAssertEqual(requestError.domain, (receivedError as NSError?)?.domain)
     }
     
-    func test_getFromURL_failsWhenAllParamsReceivedAreNil() {
+    func test_getFromURL_failsOnAllInvalidRepresentations() {
         XCTAssertNotNil(getErrorIfReceived(data: nil, response: nil, error: nil))
+        XCTAssertNotNil(getErrorIfReceived(data: nil, response: anyURLResponse(), error: nil))
+        XCTAssertNotNil(getErrorIfReceived(data: nil, response: anyHTTPURLResponse(), error: nil))
+        
+        XCTAssertNotNil(getErrorIfReceived(data: anyData(), response: nil, error: nil))
+        XCTAssertNotNil(getErrorIfReceived(data: anyData(), response: anyURLResponse(), error: nil))
+        XCTAssertNotNil(getErrorIfReceived(data: anyData(), response: anyURLResponse(), error: anyError()))
+        XCTAssertNotNil(getErrorIfReceived(data: anyData(), response: anyHTTPURLResponse(), error: nil))
+        XCTAssertNotNil(getErrorIfReceived(data: anyData(), response: anyHTTPURLResponse(), error: anyError()))
+        
+        XCTAssertNotNil(getErrorIfReceived(data: nil, response: anyURLResponse(), error: anyError()))
+        XCTAssertNotNil(getErrorIfReceived(data: nil, response: anyHTTPURLResponse(), error: anyError()))
     }
     
     //MARK: - Helper Methods
@@ -112,6 +123,11 @@ class URLSessionHTTPClientTests: XCTestCase {
     func anyURL() -> URL {
         return URL(string: "a-url.com")!
     }
+    
+    func anyURLResponse() -> URLResponse { return URLResponse(url: anyURL(), mimeType: nil, expectedContentLength: 0, textEncodingName: nil) }
+    func anyHTTPURLResponse() -> HTTPURLResponse { return  HTTPURLResponse(url: anyURL(), statusCode: 200, httpVersion: nil, headerFields: nil)! }
+    func anyData () -> Data { return Data("any-string".utf8) }
+    func anyError() -> Error { return  NSError(domain: "Failed", code: 0) }
     
     private class URLProtocolStub: URLProtocol {
         static var stub: StubResult?
