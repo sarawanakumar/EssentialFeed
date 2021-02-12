@@ -10,18 +10,9 @@ import EssentialFeed
 
 class EssentialFeedAPIE2ETests: XCTestCase {
 
-    func test_e2eServerGETRequest_MatchesFeedWithTestAccount() {
-        let testURL = URL(string: "https://essentialdeveloper.com/feed-case-study/test-api/feed")!
-        let client = URLSessionHTTPClient()
-        let loader = RemoteFeedLoader(client: client, url: testURL)
-        var receivedResult: LoadFeedResult?
+    func test_e2eServerGETFeedResult_MatchesFeedWithTestAccount() {
         
-        let exp = expectation(description: "Wait for api call to return")
-        loader.load { result in
-            receivedResult = result
-            exp.fulfill()
-        }
-        wait(for: [exp], timeout: 10.0)
+        let receivedResult = getFeedResult()
         
         switch receivedResult {
         case let .success(items)?:
@@ -40,6 +31,24 @@ class EssentialFeedAPIE2ETests: XCTestCase {
         }
     }
 
+    // MARK: - Helper methods
+    
+    func getFeedResult() -> LoadFeedResult? {
+        let testURL = URL(string: "https://essentialdeveloper.com/feed-case-study/test-api/feed")!
+        let client = URLSessionHTTPClient()
+        let loader = RemoteFeedLoader(client: client, url: testURL)
+        var receivedResult: LoadFeedResult?
+        
+        let exp = expectation(description: "Wait for api call to return")
+        loader.load { result in
+            receivedResult = result
+            exp.fulfill()
+        }
+        wait(for: [exp], timeout: 10.0)
+        
+        return receivedResult
+    }
+    
     func getItem(at index: Int) -> FeedItem {
         return FeedItem(id: getId(at: index), description: getDesc(at: index), location: getLocation(at: index), imageURL: getImageURL(at: index))
     }
