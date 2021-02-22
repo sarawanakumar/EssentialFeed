@@ -22,7 +22,7 @@
 		7E95CC1B25D05AFD0075530F /* FeedLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E95CC1A25D05AFD0075530F /* FeedLoader.swift */; };
 		7E95CC2825D107E40075530F /* EssentialFeedFeatureTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E95CC2725D107E40075530F /* EssentialFeedFeatureTests.swift */; };
 		7E95CC2A25D107E40075530F /* EssentialFeed.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E95CBFA25CE80A20075530F /* EssentialFeed.framework */; };
-		7E95CC3425D134A80075530F /* RemoteFeedLoaderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E95CC3325D134A80075530F /* RemoteFeedLoaderTests.swift */; };
+		7E95CC3425D134A80075530F /* LoadFeedFromRemoteUsecaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E95CC3325D134A80075530F /* LoadFeedFromRemoteUsecaseTests.swift */; };
 		7E95CC3A25D157BC0075530F /* RemoteFeedLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E95CC3925D157BC0075530F /* RemoteFeedLoader.swift */; };
 /* End PBXBuildFile section */
 
@@ -70,7 +70,7 @@
 		7E95CC2525D107E40075530F /* EssentialFeedFeatureTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EssentialFeedFeatureTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		7E95CC2725D107E40075530F /* EssentialFeedFeatureTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EssentialFeedFeatureTests.swift; sourceTree = "<group>"; };
 		7E95CC2925D107E40075530F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		7E95CC3325D134A80075530F /* RemoteFeedLoaderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteFeedLoaderTests.swift; sourceTree = "<group>"; };
+		7E95CC3325D134A80075530F /* LoadFeedFromRemoteUsecaseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadFeedFromRemoteUsecaseTests.swift; sourceTree = "<group>"; };
 		7E95CC3925D157BC0075530F /* RemoteFeedLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteFeedLoader.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -163,7 +163,7 @@
 			isa = PBXGroup;
 			children = (
 				7E1E55B925D656CE00A0C674 /* Helpers */,
-				7E95CC3325D134A80075530F /* RemoteFeedLoaderTests.swift */,
+				7E95CC3325D134A80075530F /* LoadFeedFromRemoteUsecaseTests.swift */,
 				7E1E55A725D5799300A0C674 /* URLSessionHTTPClientTests.swift */,
 				7E95CC0825CE80A20075530F /* EssentialFeedTests.swift */,
 				7E95CC0A25CE80A20075530F /* Info.plist */,
@@ -389,7 +389,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7E95CC3425D134A80075530F /* RemoteFeedLoaderTests.swift in Sources */,
+				7E95CC3425D134A80075530F /* LoadFeedFromRemoteUsecaseTests.swift in Sources */,
 				7E1E55BB25D656FF00A0C674 /* XCTestCase+MemoryLeakTracking.swift in Sources */,
 				7E1E55A825D5799300A0C674 /* URLSessionHTTPClientTests.swift in Sources */,
 				7E95CC0925CE80A20075530F /* EssentialFeedTests.swift in Sources */,
@@ -636,6 +636,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				INFOPLIST_FILE = EssentialFeedTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -654,6 +655,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				INFOPLIST_FILE = EssentialFeedTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -671,6 +673,7 @@
 		7E95CC2D25D107E40075530F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				INFOPLIST_FILE = EssentialFeedFeatureTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -688,6 +691,7 @@
 		7E95CC2E25D107E40075530F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				INFOPLIST_FILE = EssentialFeedFeatureTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
