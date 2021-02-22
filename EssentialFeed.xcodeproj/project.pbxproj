@@ -428,6 +428,7 @@
 		7E1E55D425D6C9E300A0C674 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				INFOPLIST_FILE = EssentialFeedAPIE2ETests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -445,6 +446,7 @@
 		7E1E55D525D6C9E300A0C674 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				INFOPLIST_FILE = EssentialFeedAPIE2ETests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (

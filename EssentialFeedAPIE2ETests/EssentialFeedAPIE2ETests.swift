@@ -9,6 +9,29 @@ import XCTest
 import EssentialFeed
 
 class EssentialFeedAPIE2ETests: XCTestCase {
+    
+    //Default path of cache when testing => (/Users/{your-user-name}/Library/Caches/com.apple.dt.xctest.tool)
+    //When running the app => (user home directory)/Library/Caches/(application bundle id)
+//    func demo()  {
+//        let cache = URLCache(memoryCapacity: 10 * 1024 * 1024, diskCapacity: 100 * 1024 * 1024)
+//        let config = URLSessionConfiguration.default
+//        config.urlCache = cache
+//        config.requestCachePolicy = .reloadIgnoringLocalCacheData //Always load from remote
+//        let session = URLSession(configuration: config)
+//
+//        //if you want to have cache policy per request
+//        let url = URL(string: "a.url.com")!
+//        let urlRequest = URLRequest(url: url, cachePolicy: .returnCacheDataDontLoad, timeoutInterval: 30)
+//        //The server should allow the particular request to be cached
+//        //e.g.response should have a header called Cache-Control [Cache-Control: public, max-age=14400]
+//
+//        //OR
+//        //URLCache.shared = cache
+//        //This must be as early as the app has lauched, in order for the config to set correctly
+//        //applicationDidFinishLaunching
+//
+//        //Not a good candidate for persisting offline data
+//    }
 
     func test_e2eServerGETFeedResult_MatchesFeedWithTestAccount() {
         let receivedResult = getFeedResult()
@@ -34,7 +57,7 @@ class EssentialFeedAPIE2ETests: XCTestCase {
     
     func getFeedResult(file: StaticString = #file, line: UInt = #line) -> LoadFeedResult? {
         let testURL = URL(string: "https://essentialdeveloper.com/feed-case-study/test-api/feed")!
-        let client = URLSessionHTTPClient()
+        let client = URLSessionHTTPClient(session: URLSession(configuration: .ephemeral))
         let loader = RemoteFeedLoader(client: client, url: testURL)
         var receivedResult: LoadFeedResult?
         
