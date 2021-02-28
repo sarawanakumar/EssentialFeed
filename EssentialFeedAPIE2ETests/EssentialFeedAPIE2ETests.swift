@@ -37,15 +37,16 @@ class EssentialFeedAPIE2ETests: XCTestCase {
         let receivedResult = getFeedResult()
         
         switch receivedResult {
-        case let .success(items)?:
-            XCTAssertEqual(items[0], getItem(at: 0))
-            XCTAssertEqual(items[1], getItem(at: 1))
-            XCTAssertEqual(items[2], getItem(at: 2))
-            XCTAssertEqual(items[3], getItem(at: 3))
-            XCTAssertEqual(items[4], getItem(at: 4))
-            XCTAssertEqual(items[5], getItem(at: 5))
-            XCTAssertEqual(items[6], getItem(at: 6))
-            XCTAssertEqual(items[7], getItem(at: 7))
+        case let .success(imageFeed)?:
+            XCTAssertEqual(imageFeed.count, 8, "expected 8 images in the test account image feed")
+            XCTAssertEqual(imageFeed[0], expectedImage(at: 0))
+            XCTAssertEqual(imageFeed[1], expectedImage(at: 1))
+            XCTAssertEqual(imageFeed[2], expectedImage(at: 2))
+            XCTAssertEqual(imageFeed[3], expectedImage(at: 3))
+            XCTAssertEqual(imageFeed[4], expectedImage(at: 4))
+            XCTAssertEqual(imageFeed[5], expectedImage(at: 5))
+            XCTAssertEqual(imageFeed[6], expectedImage(at: 6))
+            XCTAssertEqual(imageFeed[7], expectedImage(at: 7))
         case let .failure(error)?:
             XCTFail("Expected successful result but got error \(error)")
         default:
@@ -74,8 +75,8 @@ class EssentialFeedAPIE2ETests: XCTestCase {
         return receivedResult
     }
     
-    func getItem(at index: Int) -> FeedItem {
-        return FeedItem(id: getId(at: index), description: getDesc(at: index), location: getLocation(at: index), imageURL: getImageURL(at: index))
+    func expectedImage(at index: Int) -> FeedImage {
+        return FeedImage(id: getId(at: index), description: getDesc(at: index), location: getLocation(at: index), url: getImageURL(at: index))
     }
     
     func getId(at i: Int) -> UUID {
