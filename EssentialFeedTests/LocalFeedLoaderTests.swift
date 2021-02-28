@@ -93,7 +93,7 @@ class LocalFeedLoaderTests: XCTestCase {
     func test_doesNotDeliverinsertionErrorAfterSUTInstanceHasBeenDeallocated() {
         let store = FeedStoreSpy()
         var sut: LocalFeedLoader? = LocalFeedLoader(store: store, currentDate: Date.init)
-        var receivedResults = [Error?]()
+        var receivedResults = [LocalFeedLoader.SaveResult]()
         
         sut?.save([uniqueFeedItem()], completion: { receivedResults.append($0) })
         
