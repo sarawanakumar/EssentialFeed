@@ -27,43 +27,37 @@ class LoadFeedFromCacheUsecaseTests: XCTestCase {
     func test_load_failsOnRetrievalError() {
         let (store, sut) = makeSut()
         let retrievalError = anyNSError()
-        var receivedError: Error?
-        let exp = expectation(description: "wait")
-        sut.load() { result in
-            switch result {
-            case .failure(let error):
-                receivedError = error
-            default:
-                XCTFail("Expect failure, got error")
-            }
-            exp.fulfill()
-        }
         
-        store.completeRetrieval(with: retrievalError)
-        wait(for: [exp], timeout: 1.0)
-         
-        XCTAssertEqual(receivedError as NSError?, retrievalError)
+        expect(sut, toCompleteWith: .failure(retrievalError)) {
+            store.completeRetrieval(with: retrievalError)
+        }
     }
     
     func test_load_deliversNoImageOnEmptyCache() {
         let (store, sut) = makeSut()
-        var receivedImages: [FeedImage]?
+        
+        expect(sut, toCompleteWith: .success([])) {
+            store.completeRetrievalWithEmptyCache()
+        }
+    }
+    
+    func expect(_ sut: LocalFeedLoader, toCompleteWith expectedResult: LocalFeedLoader.LoadResult, when action: () -> Void, file: StaticString = #file, line: UInt = #line) {
         let exp = expectation(description: "wait")
-        sut.load() { result in
+        sut.load { receivedResult in
             
-            switch result {
-            case .success( let images):
-                receivedImages = images
+            switch (receivedResult, expectedResult) {
+            case let (.success(recievedImages), .success(expectedImages)):
+                XCTAssertEqual(recievedImages, expectedImages, file: file, line: line)
+            case let (.failure(receivedError as NSError), .failure(expectedError as NSError)):
+                XCTAssertEqual(receivedError, expectedError, file: file, line: line)
             default:
-                XCTFail("Expect to pass goot failure")
+                XCTFail("expected result, got (\receivedResult)")
             }
             exp.fulfill()
         }
 
-        store.completeRetrievalWithEmptyCache()
+        action()
         wait(for: [exp], timeout: 1.0)
-
-        XCTAssertEqual(receivedImages, [])
     }
     
     private func makeSut(currentDate: @escaping () -> Date = Date.init, file: StaticString = #file, line: UInt = #line) -> (store: FeedStoreSpy, sut: LocalFeedLoader) {
