@@ -13,7 +13,6 @@ class LocalFeedLoaderTests: XCTestCase {
     func test_init_doesNotMessageStoreUponCreation() {
         let (store, _) = makeSut()
         
-        
         XCTAssertEqual(store.receivedMessages, [])
     }
     

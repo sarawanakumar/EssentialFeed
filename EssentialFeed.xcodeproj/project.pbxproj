@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7E0E455525EE248F001A2F54 /* LoadFeedFromCacheUsecaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E0E455425EE248F001A2F54 /* LoadFeedFromCacheUsecaseTests.swift */; };
 		7E1E55A825D5799300A0C674 /* URLSessionHTTPClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E1E55A725D5799300A0C674 /* URLSessionHTTPClientTests.swift */; };
 		7E1E55BB25D656FF00A0C674 /* XCTestCase+MemoryLeakTracking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E1E55BA25D656FF00A0C674 /* XCTestCase+MemoryLeakTracking.swift */; };
 		7E1E55C325D6747800A0C674 /* URLSessionHTTPClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E1E55C225D6747800A0C674 /* URLSessionHTTPClient.swift */; };
@@ -55,6 +56,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		7E0E455425EE248F001A2F54 /* LoadFeedFromCacheUsecaseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadFeedFromCacheUsecaseTests.swift; sourceTree = "<group>"; };
 		7E1E55A725D5799300A0C674 /* URLSessionHTTPClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLSessionHTTPClientTests.swift; sourceTree = "<group>"; };
 		7E1E55BA25D656FF00A0C674 /* XCTestCase+MemoryLeakTracking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XCTestCase+MemoryLeakTracking.swift"; sourceTree = "<group>"; };
 		7E1E55C225D6747800A0C674 /* URLSessionHTTPClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLSessionHTTPClient.swift; sourceTree = "<group>"; };
@@ -175,6 +177,7 @@
 				7E1E55B925D656CE00A0C674 /* Helpers */,
 				7E95CC0A25CE80A20075530F /* Info.plist */,
 				7ED7E08325E4D98700133C16 /* LocalFeedLoaderTests.swift */,
+				7E0E455425EE248F001A2F54 /* LoadFeedFromCacheUsecaseTests.swift */,
 			);
 			path = EssentialFeedTests;
 			sourceTree = "<group>";
@@ -423,6 +426,7 @@
 			files = (
 				7E95CC3425D134A80075530F /* LoadFeedFromRemoteUsecaseTests.swift in Sources */,
 				7E1E55BB25D656FF00A0C674 /* XCTestCase+MemoryLeakTracking.swift in Sources */,
+				7E0E455525EE248F001A2F54 /* LoadFeedFromCacheUsecaseTests.swift in Sources */,
 				7ED7E08425E4D98700133C16 /* LocalFeedLoaderTests.swift in Sources */,
 				7E1E55A825D5799300A0C674 /* URLSessionHTTPClientTests.swift in Sources */,
 			);
