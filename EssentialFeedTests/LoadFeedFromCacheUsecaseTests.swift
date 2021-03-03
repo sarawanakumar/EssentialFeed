@@ -41,6 +41,17 @@ class LoadFeedFromCacheUsecaseTests: XCTestCase {
         }
     }
     
+    func test_load_deliversCachedImagesOnLessThanSevenDaysOldCache() {
+        let feed = uniqueImageFeed()
+        let fixedCurrentDate = Date()
+        let lessthanSevenDaysOldTimestamp = fixedCurrentDate.adding(days: -7).adding(seconds: 1)
+        let (store, sut) = makeSut(currentDate: { fixedCurrentDate })
+        
+        expect(sut, toCompleteWith: .success(feed.models)) {
+            store.completeRetrieval(with: feed.locals, timestamp: lessthanSevenDaysOldTimestamp)
+        }
+    }
+    
     func expect(_ sut: LocalFeedLoader, toCompleteWith expectedResult: LocalFeedLoader.LoadResult, when action: () -> Void, file: StaticString = #file, line: UInt = #line) {
         let exp = expectation(description: "wait")
         sut.load { receivedResult in
@@ -51,7 +62,7 @@ class LoadFeedFromCacheUsecaseTests: XCTestCase {
             case let (.failure(receivedError as NSError), .failure(expectedError as NSError)):
                 XCTAssertEqual(receivedError, expectedError, file: file, line: line)
             default:
-                XCTFail("expected result, got (\receivedResult)")
+                XCTFail("expected result, got \(receivedResult)")
             }
             exp.fulfill()
         }
@@ -71,5 +82,29 @@ class LoadFeedFromCacheUsecaseTests: XCTestCase {
     
     func anyNSError() -> NSError{
         return NSError(domain: "An Error ", code: 0)
+    }
+    
+    func uniqueImage() -> FeedImage {
+        let url = URL(string: "a.url.com")!
+        return FeedImage(id: UUID(), description: "anydesc", location: "anyloc", url: url)
+    }
+    
+    func uniqueImageFeed() -> (models: [FeedImage], locals: [LocalFeedImage]) {
+        let models = [uniqueImage(), uniqueImage()]
+        let locals = models.map {
+            LocalFeedImage(id: $0.id, description: $0.description, location: $0.location, url: $0.url)
+        }
+        return (models, locals)
+    }
+}
+
+private extension Date {
+    func adding(days: Int) -> Date {
+        return Calendar(identifier: .gregorian)
+            .date(byAdding: .day, value: days, to: self)!
+    }
+    
+    func adding(seconds: TimeInterval) -> Date {
+        return self + seconds
     }
 }
