@@ -128,21 +128,4 @@ class LocalFeedLoaderTests: XCTestCase {
         trackForMemoryLeaks(instance: sut, file: file, line: line)
         return (store, sut)
     }
-    
-    func uniqueImage() -> FeedImage {
-        let url = URL(string: "a.url.com")!
-        return FeedImage(id: UUID(), description: "anydesc", location: "anyloc", url: url)
-    }
-    
-    func uniqueImageFeed() -> (models: [FeedImage], locals: [LocalFeedImage]) {
-        let models = [uniqueImage(), uniqueImage()]
-        let locals = models.map {
-            LocalFeedImage(id: $0.id, description: $0.description, location: $0.location, url: $0.url)
-        }
-        return (models, locals)
-    }
-    
-    func anyNSError() -> NSError{
-        return NSError(domain: "An Error ", code: 0)
-    }
 }
