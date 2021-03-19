@@ -37,7 +37,7 @@ class LoadFeedFromRemoteUsecaseTests: XCTestCase {
     
     func test_load_returnsConnectivityError() {
         let (sut, client) = makeSUT()
-//      Spy instead of a mock (do later vs early 9the expectations0)
+//      Spy instead of a mock (do later vs early (the expectations))
         expect(sut, completeWith: failure(.connectivity)) {
             let clientError = NSError(domain: "Test", code: 0)
             client.complete(with: clientError)
