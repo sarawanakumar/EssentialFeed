@@ -66,7 +66,7 @@ class LoadFeedFromCacheUsecaseTests: XCTestCase {
     func test_load_deliversNoImagesOnExpiredCache() {
         let feed = uniqueImageFeed()
         let fixedCurrentDate = Date()
-        let expiredTimestamp = fixedCurrentDate.minusFeedCacheMaxAge().adding(days: -1)
+        let expiredTimestamp = fixedCurrentDate.minusFeedCacheMaxAge().adding(seconds: -1)
         let (store, sut) = makeSut(currentDate: { fixedCurrentDate })
         
         expect(sut, toCompleteWith: .success([])) {
@@ -95,7 +95,7 @@ class LoadFeedFromCacheUsecaseTests: XCTestCase {
     func test_load_hasNoSideEffectsOnNonExpiredCache() {
         let feed = uniqueImageFeed()
         let fixedCurrentDate = Date()
-        let nonExpiredTimestamp = fixedCurrentDate.minusFeedCacheMaxAge().adding(days: 1)
+        let nonExpiredTimestamp = fixedCurrentDate.minusFeedCacheMaxAge().adding(seconds: 1)
         let (store, sut) = makeSut(currentDate: { fixedCurrentDate })
         
         sut.load { _ in }
@@ -119,7 +119,7 @@ class LoadFeedFromCacheUsecaseTests: XCTestCase {
     func test_load_hasNoSideEffectOnExpiredTimestamp() {
         let feed = uniqueImageFeed()
         let fixedCurrentDate = Date()
-        let expiredTimestamp = fixedCurrentDate.minusFeedCacheMaxAge().adding(days: -1)
+        let expiredTimestamp = fixedCurrentDate.minusFeedCacheMaxAge().adding(seconds: -1)
         let (store, sut) = makeSut(currentDate: { fixedCurrentDate })
         
         sut.load { _ in }
