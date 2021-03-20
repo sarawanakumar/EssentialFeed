@@ -80,20 +80,7 @@ class CodableFeedStoreTests: XCTestCase {
     func test_retrieve_deliversEmptyOnCallingRetrieveOnEmptyCacheTwice() {
         let sut = makeSUT()
         
-        let exp = expectation(description: "wait for completion block")
-        sut.retrieve { firstResult in
-            sut.retrieve { secondResult in
-                switch (firstResult, secondResult) {
-                case (.empty, .empty):
-                    break
-                default:
-                    XCTFail("expected to return empty cache in both the times but instead \(firstResult) nad \(secondResult)")
-                }
-                exp.fulfill()
-            }
-        }
-        
-        wait(for: [exp], timeout: 1.0)
+        expect(sut: sut, toRetrieveTwice: .empty)
     }
     
     func test_retrieveAfterInsertingValue_deliversInsertedValue() {
@@ -101,13 +88,7 @@ class CodableFeedStoreTests: XCTestCase {
         let feed = uniqueImageFeed().locals
         let timestamp = Date()
         
-        let exp = expectation(description: "wait for completion block")
-        sut.insert(feed, timestamp: timestamp) { insertionError in
-            XCTAssertNil(insertionError, "insertion should be success")
-            exp.fulfill()
-        }
-        wait(for: [exp], timeout: 1.0)
-        
+        insert(cache: (feed, timestamp), to: sut)
         expect(sut: sut, toRetrieve: .found(feed: feed, timestamp: timestamp))
     }
     
@@ -116,27 +97,8 @@ class CodableFeedStoreTests: XCTestCase {
         let feed = uniqueImageFeed().locals
         let timestamp = Date()
         
-        let exp = expectation(description: "wait for completion block")
-        sut.insert(feed, timestamp: timestamp) { insertionError in
-            XCTAssertNil(insertionError, "insertion should be success")
-            sut.retrieve { firstResult in
-                sut.retrieve { secondResult in
-                    switch (firstResult, secondResult) {
-                    case let (.found(feed: firstFound, timestamp: firstTs), .found(feed: secondFound, timestamp: secondTs)):
-                        XCTAssertEqual(firstFound, feed)
-                        XCTAssertEqual(firstTs, timestamp)
-                        
-                        XCTAssertEqual(secondFound, feed)
-                        XCTAssertEqual(secondTs, timestamp)
-                    default:
-                        XCTFail("expected to return Same inserted feed \(feed) for on both retrieves but got \(firstResult) and then \(secondResult)")
-                    }
-                    exp.fulfill()
-                }
-            }
-        }
-        
-        wait(for: [exp], timeout: 1.0)
+        insert(cache: (feed, timestamp), to: sut)
+        expect(sut: sut, toRetrieveTwice: .found(feed: feed, timestamp: timestamp))
     }
     
     func makeSUT(file: StaticString = #file, line: UInt = #line) -> CodableFeedStore {
@@ -163,6 +125,20 @@ class CodableFeedStoreTests: XCTestCase {
             exp.fulfill()
         }
         
+        wait(for: [exp], timeout: 1.0)
+    }
+    
+    func expect(sut: CodableFeedStore, toRetrieveTwice expectedResult: RetrieveCachedFeedResult, file: StaticString = #file, line: UInt = #line) {
+        expect(sut: sut, toRetrieve: expectedResult, file: file, line: line)
+        expect(sut: sut, toRetrieve: expectedResult, file: file, line: line)
+    }
+    
+    func insert(cache: (feed: [LocalFeedImage], timestamp: Date), to sut: CodableFeedStore, file: StaticString = #file, line: UInt = #line) {
+        let exp = expectation(description: "wait for completion block")
+        sut.insert(cache.feed, timestamp: cache.timestamp) { insertionError in
+            XCTAssertNil(insertionError, "insertion should be success", file: file, line: line)
+            exp.fulfill()
+        }
         wait(for: [exp], timeout: 1.0)
     }
     
