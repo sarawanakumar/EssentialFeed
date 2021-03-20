@@ -54,11 +54,15 @@ class CodableFeedStore {
     }
     
     func insert(_ feed: [LocalFeedImage], timestamp: Date, completion: @escaping FeedStore.InsertionCompletion) {
-        let encoder = JSONEncoder()
-        let cache = Cache(feed: feed.map(CodableFeedImage.init), timestamp: timestamp)
-        let encoded = try! encoder.encode(cache)
-        try! encoded.write(to: storeURL)
-        completion(nil)
+        do {
+            let encoder = JSONEncoder()
+            let cache = Cache(feed: feed.map(CodableFeedImage.init), timestamp: timestamp)
+            let encoded = try encoder.encode(cache)
+            try encoded.write(to: storeURL)
+            completion(nil)
+        } catch {
+            completion(error)
+        }
     }
 }
 
@@ -137,6 +141,16 @@ class CodableFeedStoreTests: XCTestCase {
         expect(sut: sut, toRetrieve: .found(feed: latestFeed, timestamp: latestTimestamp))
     }
     
+    func test_insert_deliversErrorIfInsertionFails() {
+        let invalidStoreURL = URL(string: "invalid://store-url")!
+        let sut = makeSUT(storeURL: invalidStoreURL)
+        let feed = uniqueImageFeed().locals
+        let timestamp = Date()
+        
+        let insertionError = insert(cache: (feed, timestamp), to: sut)
+        XCTAssertNotNil(insertionError, "Expected insertion to fail with an error")
+    }
+    
     func makeSUT(storeURL: URL? = nil, file: StaticString = #file, line: UInt = #line) -> CodableFeedStore {
         let sut = CodableFeedStore(storeURL: storeURL ?? testSpecificStoreURL())
         
@@ -170,12 +184,11 @@ class CodableFeedStoreTests: XCTestCase {
     }
     
     @discardableResult
-    func insert(cache: (feed: [LocalFeedImage], timestamp: Date), to sut: CodableFeedStore, file: StaticString = #file, line: UInt = #line) -> Error? {
+    func insert(cache: (feed: [LocalFeedImage], timestamp: Date), to sut: CodableFeedStore) -> Error? {
         var error: Error? = nil
         let exp = expectation(description: "wait for completion block")
         sut.insert(cache.feed, timestamp: cache.timestamp) { insertionError in
             error = insertionError
-            XCTAssertNil(insertionError, "insertion should be success", file: file, line: line)
             exp.fulfill()
         }
         wait(for: [exp], timeout: 1.0)
